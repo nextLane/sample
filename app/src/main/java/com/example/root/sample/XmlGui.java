@@ -1,9 +1,4 @@
-/*
- * XmlGui application.
- * Written by Frank Ableson for IBM Developerworks
- * June 2010
- * Use the code as you wish -- no warranty of fitness, etc, etc.
- */
+
 package com.example.root.sample;
 
 

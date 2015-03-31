@@ -1,9 +1,5 @@
 /*
- * XmlGui application.
- * Written by Frank Ableson for IBM Developerworks
- * June 2010
- * Use the code as you wish -- no warranty of fitness, etc, etc.
- */
+  */
 package com.example.root.sample;
 
 import android.app.Activity;
@@ -52,19 +48,30 @@ public class RunForm extends Activity {
 	XmlGuiForm theForm;
 	ProgressDialog progressDialog;
 	Handler progressHandler;
-	
+    private SQLiteAdapter mySQLiteAdapter;
+
+    public void onBackPressed() {
+        // Write your code here
+
+        // Switching to ListView screen
+        Intent i = new Intent(getApplicationContext(), AndroidSQLite.class);
+        startActivity(i);     //either save instance checkout how
+    }
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String formNumber = "";
         Intent startingIntent = getIntent();
+        mySQLiteAdapter = new SQLiteAdapter(this);
+        mySQLiteAdapter.openToRead();
         if(startingIntent == null) {
         	Log.e(tag,"No Intent?  We're not supposed to be here...");
         	finish();
         	return;
         }
-    	formNumber = startingIntent.getStringExtra("formNumber");
-    	Log.i(tag,"Running Form [" + formNumber + "]");
+    	formNumber = getIntent().getStringExtra("ID");
+    	//Log.d("**********","Running Form [" + formNumber + "]");
+        //formNumber = getIntent().getStringExtra("ID");
     	if (GetFormData(formNumber)) {
     		DisplayForm();
     	}
@@ -248,13 +255,17 @@ public class RunForm extends Activity {
 		}
 	}
 	private boolean GetFormData(String formNumber) {
-		try {
+
+        Log.d("PAAAAAA:",formNumber);
+        try {
 			Log.i(tag,"ProcessForm");
+
+         //String xml= mySQLiteAdapter.getFormCode(formNumber);
 			//URL url = new URL("http://servername/xmlgui"  + ".xml");
-			//Log.i(tag,url.toString());
+			//Log.d("xxxx", xml);
             //
             // InputStream is= getResources().openRawResource(R.raw.xmlgui1);
-            String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+           String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                     "<xmlgui>\n" +
                     "<form id=\"1\" name=\"Robotics Club Registration\" submitTo=\"http://servername/xmlgui1-post.php\" ><field label=\"First Name\" type=\"text\" required=\"Y\" options=\"\"/><field label=\"Last Name\" type=\"text\" required=\"Y\" options=\"\"/>\n" +
                     "<field label=\"Gender\" type=\"choice\" required=\"Y\" options=\"Male|Female|sdksfnekfn\"/>\n" +
@@ -268,7 +279,11 @@ public class RunForm extends Activity {
                     "</xmlgui>\n" +
                     "\n ";
 
-          //  InputStream is = IOUtils.toInputStream(xml, "UTF-8");
+
+
+
+            //  InputStream is = IOUtils.toInputStream(xml, "UTF-8");
+
             InputStream is = new ByteArrayInputStream(xml.getBytes(Charset.forName("UTF-8")));
 
 

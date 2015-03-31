@@ -7,9 +7,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
 
-/**
- * Created by root on 30/3/15.
- */
 public class MainActivity extends Activity {
 
     public void onCreate(Bundle savedInstanceState) {
@@ -23,8 +20,8 @@ public class MainActivity extends Activity {
         enter.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-                // Switching to Register screen
-                Intent i = new Intent(getApplicationContext(), RunForm.class);
+                // Switching to ListView screen
+                Intent i = new Intent(getApplicationContext(), AndroidSQLite.class);
                 startActivity(i);
             }
         });
