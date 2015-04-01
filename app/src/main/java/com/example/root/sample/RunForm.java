@@ -201,7 +201,8 @@ public class RunForm extends Activity {
         List<String> m = new ArrayList<String>();
         for(int i=0; i<theForm.fields.size();i++){
             if (theForm.fields.elementAt(i).getType().equals("text")) {
-                x1 = textview.getValue();
+             //   x1 = textview.getValue();
+               x1="ola";
                 z = theForm.fields.elementAt(i).getLabel();
                 query += z;
                 query += " VARCHAR,";
