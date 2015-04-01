@@ -32,9 +32,18 @@ public class AndroidSQLite extends Activity {
     JSONArray products = null;
     private SQLiteAdapter mySQLiteAdapter;
 
+    public void onBackPressed() {
+        // Write your code here
+        //moveTaskToBack(true);
+        // RunForm.this.finish();
+        // Switching to ListView screen
+        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(i);     //either save instance checkout how
+    }
     /**
      * Called when the activity is first created.
      */
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,17 +82,7 @@ public class AndroidSQLite extends Activity {
                 "</xmlgui>\n";
        // xml = xml.replace("\n", "\\n").replace("\r", "\\r");
 
-        //String jStr = "{\"forms\":[{\"fid\":\"50\",\"title\":\"bmjana\",\"xml\":\""+ xml+"\",\"updated_at\":\"2015-03-27 19:53:26\"},{\"fid\":\"55\",\"title\":\"Men Health\",\"xml\":\"\"+ xml+\"\",\"updated_at\":\"2015-03-27 19:53:50\"},{\"fid\":\"58\",\"title\":\"child Health\",\"xml\":\"\"+ xml+\"\",\"updated_at\":\"2015-03-27 19:53:50\"}],\"success\":1}";
-         String jStr= "{\"forms\":[{\"fid\":\"50\",\"title\":\"bmjana\",\" <?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                 "\" +\n" +
-                 "                \"<xmlgui>\\n\" +\n" +
-                 "                \"<form id=\\\"1\\\" name=\\\"Robotics Club Registration\\\" submitTo=\\\"http://servername/xmlgui1-post.php\\\" ><field label=\\\"First Name\\\" type=\\\"text\\\" required=\\\"Y\\\" options=\\\"\\\"/><field label=\\\"Last Name\\\" type=\\\"text\\\" required=\\\"Y\\\" options=\\\"\\\"/>\\n\" +\n" +
-                 "                \"<field label=\\\"Gender\\\" type=\\\"choice\\\" required=\\\"Y\\\" options=\\\"Male|Female|sdksfnekfn\\\"/>\\n\" +\n" +
-                 "                \"<field label=\\\"Age on 15 Oct. 2010\\\" type=\\\"numeric\\\" required=\\\"N\\\" options=\\\"\\\"/>\\n\" +\n" +
-                 "                \"<field label=\\\"checkbox\\\" type=\\\"CheckBox\\\" required=\\\"Y\\\" options=\\\"meoww|bowwwow|sfnjdnkjdbv\\\"/>\\n\" +\n" +
-                 "                \"<field label=\\\"checkboxmeoww\\\" type=\\\"CheckBox2\\\" required=\\\"Y\\\" options=\\\"meoww|bowwwow|sfnjdnkjdbv\\\"/>\\n\" +\n" +
-                 "                \"</form>\\n\" +\n" +
-                 "                \"</xmlgui>\n \":\""+xml+"\",\"updated_at\":\"2015-03-27 19:53:26\"}],\"success\":1}";
+      String jStr = "{\"forms\":[{\"fid\":\"50\",\"title\":\"bmjana\",\"xml\":\"okiedokie\",\"updated_at\":\"2015-03-27 19:53:26\"},{\"fid\":\"55\",\"title\":\"Men Health\",\"xml\":\"wokeydokey\",\"updated_at\":\"2015-03-27 19:53:50\"},{\"fid\":\"58\",\"title\":\"child Health\",\"xml\":\"oladola\",\"updated_at\":\"2015-03-27 19:53:50\"}],\"success\":1}";
 
         //String jStr='{"forms":[{"fid":"1","title":"Agriculture Survey","xml":"<?xml version='1.0' encoding='utf-8'?><xmlgui><form id='1' name='Robotics Club Registration' submitTo='http:\/\/servername\/xmlgui-post.php'><field label='First Name' type='text' required='Y' options=''\/><field label='Last Name' type='text' required='Y' options=''\/><field label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn'\/><field label='Age on 15 Oct. 2010' type='numeric' required='N' options=''\/><field label='checkbox' type='CheckBox' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'\/><field label='checkboxmeoww' type='CheckBox2' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'\/><\/form><\/xmlgui>'","updated_at":"2015-03-31 17:15:06"},{"fid":"2","title":"Women Health","xml":"<?xml version='1.0' encoding='utf-8'?><xmlgui><form id='1' name='Robotics Club Registration' submitTo='http:\/\/servername\/xmlgui-post.php'><field label='First Name' type='text' required='Y' options=''\/><field label='Last Name' type='text' required='Y' options=''\/><field label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn'\/><field label='Age on 15 Oct. 2010' type='numeric' required='N' options=''\/><field label='checkbox' type='CheckBox' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'\/><field label='checkboxmeoww' type='CheckBox2' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'\/><\/form><\/xmlgui>'","updated_at":"2015-03-31 17:15:15"}],"success":1}';
 
@@ -206,4 +205,5 @@ public class AndroidSQLite extends Activity {
         }
 
     }
+
 }
