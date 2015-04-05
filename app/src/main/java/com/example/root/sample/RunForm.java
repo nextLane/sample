@@ -6,6 +6,8 @@ import android.content.ContentValues;
 import android.os.Bundle;
 import android.content.Intent;
 import android.util.Log;
+
+import java.io.ByteArrayInputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.io.InputStream;
@@ -15,6 +17,8 @@ import java.io.BufferedOutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import android.app.AlertDialog.*;
+
+import java.nio.charset.StandardCharsets;
 import java.util.ListIterator;
 import java.lang.Thread;
 
@@ -63,7 +67,7 @@ public class RunForm extends Activity {
             finish();
             return;
         }
-        formNumber = startingIntent.getStringExtra("formNumber");
+        formNumber = startingIntent.getStringExtra("ID");
         Log.i(tag,"Running Form [" + formNumber + "]");
         if (GetFormData(formNumber)) {
             DisplayForm();
@@ -91,6 +95,7 @@ public class RunForm extends Activity {
             final LinearLayout ll = new LinearLayout(this);
             sv.addView(ll);
             ll.setOrientation(LinearLayout.VERTICAL);
+
             //ll.setOrientation(LinearLayout.Scro);
             // walk thru our form elements and dynamically create them, leveraging our mini library of tools.
             int i;
@@ -357,12 +362,60 @@ public class RunForm extends Activity {
         //return null;
     }
     //}*/
+    public void onBackPressed() {
+        // Write your code here
+        //moveTaskToBack(true);
+        // RunForm.this.finish();
+        // Switching to ListView screen
+        Intent i = new Intent(getApplicationContext(), AndroidSQLite.class);
+        startActivity(i);     //either save instance checkout how
+    }
     private boolean GetFormData(String formNumber) {
+
+        Log.d("FFFFFN:",formNumber);
+        SQLiteAdapter msa;
+        msa = new SQLiteAdapter(this);
+        msa.openToRead();
+        String jxml= msa.getFormCode(formNumber);
+        msa.close();
+        Log.d("CCCCCCD:",jxml);
         try {
             Log.i(tag,"ProcessForm");
             //URL url = new URL("http://servername/xmlgui"  + ".xml");
             //Log.i(tag,url.toString());
-            InputStream is= getResources().openRawResource(R.raw.xmlgui1);
+            /*String vxml="<?xml version='1.0' encoding='utf-8'?>\n" +
+                    "<xmlgui>\n" +
+                    "<form id='1' name='Robotics Club Registration' submitTo='http://servername/xmlgui1-post.php' ><field label='First Name' type='text' required='Y' options=''/><field label='Last Name' type='text' required='Y' options=''/>\n" +
+                    "<field label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn'/>\n" +
+                    "<field label='Age on 15 Oct. 2010' type='numeric' required='N' options=''/>\n" +
+                    "<field label='checkbox' type='CheckBox' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'/>\n" +
+                    "<field label='checkboxmeoww' type='CheckBox2' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'/>\n" +
+                    "</form>\n" +
+                    "</xmlgui>\n" +
+                    "\n";*/
+           //Log.d("&&&&&",vxml);
+           // String jxml="<?xml version='1.0' encoding='utf-8'?><xmlgui><form id='1' name='Robotics Club Registration' submitTo='http://servername/xmlgui-post.php'><field label='First Name' type='text' required='Y' options=''/><field label='Last Name' type='text' required='Y' options=''/><field label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn'/><field label='Age on 15 Oct. 2010' type='numeric' required='N' options=''/><field label='checkbox' type='CheckBox' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'/><field label='checkboxmeoww' type='CheckBox2' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'/></form></xmlgui>'<?xml version='1.0' encoding='utf-8'?><xmlgui><form id='1' name='Robotics Club Registration' submitTo='http://servername/xmlgui-post.php'><field label='First Name' type='text' required='Y' options=''/><field label='Last Name' type='text' required='Y' options=''/><field label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn'/><field label='Age on 15 Oct. 2010' type='numeric' required='N' options=''/><field label='checkbox' type='CheckBox' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'/><field label='checkboxmeoww' type='CheckBox2' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'/></form></xmlgui>'{\"forms\":[{\"fid\":\"1\",\"title\":\"Agriculture Survey\",\"xml\":\"<?xml version='1.0' encoding='utf-8'?><xmlgui><form id='1' name='Robotics Club Registration' submitTo='http:\\/\\/servername\\/xmlgui-post.php'><field label='First Name' type='text' required='Y' options=''\\/><field label='Last Name' type='text' required='Y' options=''\\/><field label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn'\\/><field label='Age on 15 Oct. 2010' type='numeric' required='N' options=''\\/><field label='checkbox' type='CheckBox' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'\\/><field label='checkboxmeoww' type='CheckBox2' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'\\/><\\/form><\\/xmlgui>'\",\"updated_at\":\"2015-03-31 17:15:06\"},{\"fid\":\"2\",\"title\":\"Women Health\",\"xml\":\"<?xml version='1.0' encoding='utf-8'?><xmlgui><form id='1' name='Robotics Club Registration' submitTo='http:\\/\\/servername\\/xmlgui-post.php'><field label='First Name' type='text' required='Y' options=''\\/><field label='Last Name' type='text' required='Y' options=''\\/><field label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn'\\/><field label='Age on 15 Oct. 2010' type='numeric' required='N' options=''\\/><field label='checkbox' type='CheckBox' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'\\/><field label='checkboxmeoww' type='CheckBox2' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'\\/><\\/form><\\/xmlgui>'\",\"updated_at\":\"2015-03-31 17:15:15\"}],\"success\":1}";
+           // String jxml="oa?xml version='1.0' encoding='utf-8'?caoaxmlguicaoaform id='1' name='Robotics Club Registration'caoafield label='First Name' type='text' required='Y' options='' cbaoafield label='Last Name' type='text' required='Y' options='' cbaoafield label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn' cbaoafield label='Age on 15 Oct. 2010' type='numeric' required='N' options='' cbaoafield label='checkbox' type='CheckBox' required='Y' options='meoww|bowwwow|sfnjdnkjdbv' cbaoafield label='checkboxmeoww' type='CheckBox2' required='Y' options='meoww|bowwwow|sfnjdnkjdbv' cba obaformca obaxmlguica";
+            //String jxml=msa.getFormCode(formNumber);
+//String jxml= "<?xml version='1.0' encoding='utf-8'?><xmlgui><form id='1' name='Robotics Club Registration'><field label='First Name' type='text' required='Y' options='' /><field label='Last Name' type='text' required='Y' options='' /><field label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn' /><field label='Age on 15 Oct. 2010' type='numeric' required='N' options='' /><field label='checkbox' type='CheckBox' required='Y' options='meoww|bowwwow|sfnjdnkjdbv' /><field label='checkboxmeoww' type='CheckBox2' required='Y' options='meoww|bowwwow|sfnjdnkjdbv' /> </form> </xmlgui>";
+            jxml=jxml.replace("oba","</");
+            jxml=jxml.replace("cba","/>");
+            jxml=jxml.replace("oa","<");
+            jxml=jxml.replace("ca",">");
+            //jxml=jxml.replace(" '","'");
+            //jxml=jxml.replace("' ","'");
+            ;
+
+          //  String xxml="<?xml version='1.0' encoding='utf-8'?><xmlgui><form id='1' name='Robotics Club Registration'<field label='First Name' type='text' required='Y' options=''><field label='Last Name' type='text' required='Y' options=''><field label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn'><field label='Age on 15 Oct. 2010' type='numeric' required='N' options=''><field label='checkbox' type='CheckBox' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'><field label='checkboxmeoww' type='CheckBox2' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'><form><xmlgui>";
+            //xxml=xxml.replace(">",">\n");
+  //          Log.d("*****",jxml);
+
+
+            InputStream is= new ByteArrayInputStream(jxml.getBytes());
+
+           // InputStream is= getResources().openRawResource(R.raw.xmlgui1);
+
+
             //InputStream is = url.openConnection().getInputStream();
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = factory.newDocumentBuilder();
