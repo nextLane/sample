@@ -1,7 +1,8 @@
 package com.example.root.sample;
 
 /**
- * Created by root on 30/3/15.
+ * Created by Author: Aditi Bhatnagar
+
  */
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,6 +11,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
+
+import java.util.ArrayList;
 
 public class SQLiteAdapter {
 
@@ -42,6 +45,28 @@ public class SQLiteAdapter {
         sqLiteHelper = new SQLiteHelper(context, MYDATABASE_NAME, null, MYDATABASE_VERSION);
         sqLiteDatabase = sqLiteHelper.getReadableDatabase();
         return this;
+    }
+
+    public SQLiteDatabase getReadableDb() throws android.database.SQLException {
+        sqLiteHelper = new SQLiteHelper(context, MYDATABASE_NAME, null, MYDATABASE_VERSION);
+        sqLiteDatabase = sqLiteHelper.getReadableDatabase();
+        return sqLiteDatabase;
+    }
+
+    public ArrayList<String> getAllTable() {
+
+        ArrayList<String> arrTblNames = new ArrayList<String>();
+        SQLiteDatabase db= this.getReadableDb();
+        Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+        c.moveToFirst();
+        while (!c.isAfterLast()) {
+
+            arrTblNames.add(c.getString(c.getColumnIndex("name")));
+            c.moveToNext();
+        }
+        // make sure to close the cursor
+        c.close();
+        return arrTblNames;
     }
 
     public SQLiteAdapter openToWrite() throws android.database.SQLException {
@@ -103,6 +128,21 @@ public class SQLiteAdapter {
         public void onCreate(SQLiteDatabase db) {
             // TODO Auto-generated method stub
             db.execSQL(SCRIPT_CREATE_DATABASE);
+            //TO BE REMOVED.
+            db.execSQL("CREATE TABLE table1 ( ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            "Name" + " TEXT NOT NULL, " +
+                            "Surname" + " TEXT NOT NULL);"
+            );
+
+            db.execSQL("CREATE TABLE table2 ( FID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            "Question" + " TEXT NOT NULL, " +
+                            "Answer" + " TEXT NOT NULL);"
+            );
+            db.execSQL("CREATE TABLE table3 ( ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            "Day" + " TEXT NOT NULL, " +
+                            "Time" + " TEXT NOT NULL);"
+            );
+
         }
 
         @Override

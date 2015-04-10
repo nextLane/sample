@@ -2,6 +2,13 @@
     package="com.example.root.sample">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+
+    <uses-permission
+        android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission
+        android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+
     <application android:allowBackup="true" android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher" android:theme="@style/AppTheme">
 
@@ -28,7 +35,16 @@
 
         </activity>
 
-
+        <service
+            android:name="com.example.root.sample.SyncService"
+            android:exported="true"
+            android:process=":sync">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter"/>
+            </intent-filter>
+            <meta-data android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
 
     </application>
 

@@ -18,8 +18,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 public class AndroidSQLite extends Activity {
-    private static String url_all_forms = "http://192.168.83.1:80/surveyor/get_all_forms.php";
+    private static String url_all_forms = "http://192.168.64.1:80/team14/get_all_forms.php";
 
     // JSON Node names
     private static final String TAG_SUCCESS = "success";
@@ -27,6 +30,10 @@ public class AndroidSQLite extends Activity {
     private static final String TAG_FID = "fid";
     private static final String TAG_TITLE = "title";
     private static final String TAG_XML = "xml";
+    String ngoid="";
+    String volunteer_id="";
+    // products JSONArray
+
 
     // products JSONArray
     JSONArray products = null;
@@ -49,6 +56,21 @@ public class AndroidSQLite extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         ListView listContent = (ListView) findViewById(R.id.contentlist);
+        SQLiteAdapter sla =new SQLiteAdapter(this);
+        ArrayList<String> p=sla.getAllTable();
+        sla.close();
+        for (int i=0; i<p.size(); i++)
+            Log.d("++++++++",p.get(i));
+
+        Intent startingIntent = getIntent();
+        if(startingIntent == null) {
+
+            finish();
+            return;
+        }
+
+        ngoid= startingIntent.getStringExtra("ngoid");
+        volunteer_id= startingIntent.getStringExtra("volid");
         listContent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 
@@ -70,40 +92,42 @@ public class AndroidSQLite extends Activity {
        */
         mySQLiteAdapter = new SQLiteAdapter(this);
         mySQLiteAdapter.openToWrite();
-        mySQLiteAdapter.deleteAll();
+        //mySQLiteAdapter.deleteAll();
 //        String xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-  //              "<xmlgui>\n" +
-    //            "<form id=\"1\" name=\"Robotics Club Registration\" submitTo=\"http://servername/xmlgui1-post.php\" ><field label=\"First Name\" type=\"text\" required=\"Y\" options=\"\"/><field label=\"Last Name\" type=\"text\" required=\"Y\" options=\"\"/>\n" +
-      //          "<field label=\"Gender\" type=\"choice\" required=\"Y\" options=\"Male|Female|sdksfnekfn\"/>\n" +
+        //              "<xmlgui>\n" +
+        //            "<form id=\"1\" name=\"Robotics Club Registration\" submitTo=\"http://servername/xmlgui1-post.php\" ><field label=\"First Name\" type=\"text\" required=\"Y\" options=\"\"/><field label=\"Last Name\" type=\"text\" required=\"Y\" options=\"\"/>\n" +
+        //          "<field label=\"Gender\" type=\"choice\" required=\"Y\" options=\"Male|Female|sdksfnekfn\"/>\n" +
         //        "<field label=\"Age on 15 Oct. 2010\" type=\"numeric\" required=\"N\" options=\"\"/>\n" +
-          //      "<field label=\"checkbox\" type=\"CheckBox\" required=\"Y\" options=\"meoww|bowwwow|sfnjdnkjdbv\"/>\n" +
-            //    "<field label=\"checkboxmeoww\" type=\"CheckBox2\" required=\"Y\" options=\"meoww|bowwwow|sfnjdnkjdbv\"/>\n" +
-              //  "</form>\n" +
-                //"</xmlgui>\n";
+        //      "<field label=\"checkbox\" type=\"CheckBox\" required=\"Y\" options=\"meoww|bowwwow|sfnjdnkjdbv\"/>\n" +
+        //    "<field label=\"checkboxmeoww\" type=\"CheckBox2\" required=\"Y\" options=\"meoww|bowwwow|sfnjdnkjdbv\"/>\n" +
+        //  "</form>\n" +
+        //"</xmlgui>\n";
         // xml = xml.replace("\n", "\\n").replace("\r", "\\r");
 
 //        String jStr = "{\"forms\":[{\"fid\":\"50\",\"title\":\"bmjana\",\"xml\":\"okiedokie\",\"updated_at\":\"2015-03-27 19:53:26\"},{\"fid\":\"55\",\"title\":\"Men Health\",\"xml\":\"wokeydokey\",\"updated_at\":\"2015-03-27 19:53:50\"},{\"fid\":\"58\",\"title\":\"child Health\",\"xml\":\"oladola\",\"updated_at\":\"2015-03-27 19:53:50\"}],\"success\":1}";
 
         //String jStr='{"forms":[{"fid":"1","title":"Agriculture Survey","xml":"<?xml version='1.0' encoding='utf-8'?><xmlgui><form id='1' name='Robotics Club Registration' submitTo='http:\/\/servername\/xmlgui-post.php'><field label='First Name' type='text' required='Y' options=''\/><field label='Last Name' type='text' required='Y' options=''\/><field label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn'\/><field label='Age on 15 Oct. 2010' type='numeric' required='N' options=''\/><field label='checkbox' type='CheckBox' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'\/><field label='checkboxmeoww' type='CheckBox2' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'\/><\/form><\/xmlgui>'","updated_at":"2015-03-31 17:15:06"},{"fid":"2","title":"Women Health","xml":"<?xml version='1.0' encoding='utf-8'?><xmlgui><form id='1' name='Robotics Club Registration' submitTo='http:\/\/servername\/xmlgui-post.php'><field label='First Name' type='text' required='Y' options=''\/><field label='Last Name' type='text' required='Y' options=''\/><field label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn'\/><field label='Age on 15 Oct. 2010' type='numeric' required='N' options=''\/><field label='checkbox' type='CheckBox' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'\/><field label='checkboxmeoww' type='CheckBox2' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'\/><\/form><\/xmlgui>'","updated_at":"2015-03-31 17:15:15"}],"success":1}';
 
-       // String jStr= "{\"forms\":[{\"fid\":\"1\",\"title\":\"Agriculture Survey\",\"xml\":\"oa?xml version='1.0' encoding='utf-8'?caoaxmlguicaoaform id='1' name='Robotics Club Registration'caoafield label='First Name' type='text' required='Y' options='' cbaoafield label='Last Name' type='text' required='Y' options='' cbaoafield label='Gender' type='choice' required='Y' options='Male|Female' cbaoafield label='Age on 15 Oct. 2014' type='numeric' required='N' options='' cbaoafield label='checkbox' type='CheckBox' required='Y' options='X|XII|Diploma' cbaoafield label='checkboxmeoww' type='CheckBox2' required='Y' options='Minor|Major|NA' cba obaformca obaxmlguica\",\"updated_at\":\"2015-04-06 03:07:57\"},{\"fid\":\"2\",\"title\":\"Women Health\",\"xml\":\"oa?xml version='1.0' encoding='utf-8'?caoaxmlguicaoaform id='1' name='Robotics Club Registration'caoafield label='First Name' type='text' required='Y' options='' cbaoafield label='Last Name' type='text' required='Y' options='' cbaoafield label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn' cbaoafield label='Age on 15 Oct. 2010' type='numeric' required='N' options='' cbaoafield label='checkbox' type='CheckBox' required='Y' options='code|teach|cook' cbaoafield label='checkboxmeoww' type='CheckBox2' required='Y' options='Stressed|Contended|Very Happy' cba obaformca obaxmlguica\",\"updated_at\":\"2015-04-06 03:08:05\"}],\"success\":1}";
+         String jStr= "{\"forms\":[{\"fid\":\"1\",\"title\":\"Agriculture Survey\",\"xml\":\"oa?xml version='1.0' encoding='utf-8'?caoaxmlguicaoaform id='1' name='Robotics Club Registration'caoafield label='First Name' type='text' required='Y' options='' cbaoafield label='Last Name' type='text' required='Y' options='' cbaoafield label='Gender' type='choice' required='Y' options='Male|Female' cbaoafield label='Age on 15 Oct. 2014' type='numeric' required='N' options='' cbaoafield label='checkbox' type='CheckBox' required='Y' options='X|XII|Diploma' cbaoafield label='checkboxmeoww' type='CheckBox2' required='Y' options='Minor|Major|NA' cba obaformca obaxmlguica\",\"updated_at\":\"2015-04-06 03:07:57\"},{\"fid\":\"2\",\"title\":\"Women Health\",\"xml\":\"oa?xml version='1.0' encoding='utf-8'?caoaxmlguicaoaform id='1' name='Robotics Club Registration'caoafield label='First Name' type='text' required='Y' options='' cbaoafield label='Last Name' type='text' required='Y' options='' cbaoafield label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn' cbaoafield label='Age on 15 Oct. 2010' type='numeric' required='N' options='' cbaoafield label='checkbox' type='CheckBox' required='Y' options='code|teach|cook' cbaoafield label='checkboxmeoww' type='CheckBox2' required='Y' options='Stressed|Contended|Very Happy' cba obaformca obaxmlguica\",\"updated_at\":\"2015-04-06 03:08:05\"}],\"success\":1}";
         //Log.d("jjjj:",""+jStr);
         JSONObject json = null;
         JSONParser jp= new JSONParser();
         Log.d("MMMMMMM","RRRRRR");
+        url_all_forms += "?ngoid="+ngoid+"&volunteer_id="+volunteer_id;
 
-        json= jp.makeHttpRequest(url_all_forms);
+       // json= jp.makeHttpRequest(url_all_forms);
         Log.d("WWWWWWW","YYYYY");
 
-        // try {
-         //   //json = new JSONObject(jStr);
-           // Log.d("jjjj:",""+json);
-        //} catch (JSONException e) {
-          //  e.printStackTrace();
-        //}
+         try {
+             json = new JSONObject(jStr);
+             Log.d("jjjj:", "" + json);
+         }
+         catch (JSONException e) {
+          e.printStackTrace();
+        }
 
         // Check your log cat for JSON reponse
-        Log.d("All Forms: ", json.toString());
+       Log.d("All Forms: ", json.toString());
 
 
         try {
@@ -207,10 +231,11 @@ public class AndroidSQLite extends Activity {
             mySQLiteAdapter.close();
 
 
-        } catch (JSONException e) {
+        }  catch (JSONException e) {
             e.printStackTrace();
         }
 
     }
+
 
 }

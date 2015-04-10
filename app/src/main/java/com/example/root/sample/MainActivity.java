@@ -1,21 +1,37 @@
 package com.example.root.sample;
+//Author: Aditi Bhatnagar
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 public class MainActivity extends Activity {
 String msg="++++++";
+ContentResolver mResolver;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // setting default screen to login.xml
+
+        // Get the content resolver for your app
+        mResolver = getContentResolver();
+        // Turn on automatic syncing for the default account and authority
+        mResolver.setMasterSyncAutomatically(true);
+
         setContentView(R.layout.activity_main);
 
         Button enter = (Button) findViewById(R.id.button);
+        final EditText vol= (EditText) findViewById(R.id.editText);
+        final EditText ngo= (EditText) findViewById(R.id.editText2);
 
         // Listening to register new account link
         enter.setOnClickListener(new View.OnClickListener() {
@@ -23,6 +39,8 @@ String msg="++++++";
             public void onClick(View v) {
                 // Switching to ListView screen
                 Intent i = new Intent(getApplicationContext(), AndroidSQLite.class);
+                i.putExtra("ngoid", ngo.getText().toString());
+                i.putExtra("volid", vol.getText().toString());
                 startActivity(i);
             }
         });
@@ -30,7 +48,18 @@ String msg="++++++";
             finish();
             return;
         }
+
+
+
+
+
+
+
     }
+
+
+
+
 
 
 
