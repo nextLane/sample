@@ -64,13 +64,14 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             JSONArray jArray = new JSONArray();
 
         try {
-            newDB = SQLiteDatabase.openDatabase("/data/data/com..../databases/...db", null, SQLiteDatabase.CONFLICT_NONE);
+            newDB = SQLiteDatabase.openDatabase("surdb", null, SQLiteDatabase.CONFLICT_NONE);
         } catch (SQLException e) {
             Log.d("Error", "Error while Opening Database");
             e.printStackTrace();
         }
 
-        Cursor cq = newDB.rawQuery("SELECT name FROM "+ "name of database" +" WHERE type='table'", null);
+        Cursor cq = newDB.rawQuery("SELECT name FROM "+ "surdb" +" WHERE type='table'", null);
+
 
         if (cq.moveToFirst()) {
             while (!cq.isAfterLast()) {
@@ -80,9 +81,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                 try {
 
+  //we need ngo id and form id to be passed as params to php
 
                     Cursor c = newDB.rawQuery("Select * from "+ cq.getString(0) +" where synced = 0", null);
-
+                    Log.d("Tblllll:",cq.getString(0));
                     int cnt = c.getColumnCount();
                     if (c.getCount() == 0) {
                         c.close();
@@ -115,15 +117,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                         HttpClient client = new DefaultHttpClient(httpParams);
 
-                        String url = "http://ipaddress/..../test.php?arrayLength=" + arrayLength;
+                        String url = "http://192.168.64.1:80/team14/updateDatabase.php?arrayLength=" + arrayLength+"&colcount="+(cnt-1)+"&ngoid_formid="+cq.getString(0);
 
                         HttpPost request = new HttpPost(url);
                         request.setEntity(new ByteArrayEntity(jArray.toString().getBytes("UTF8")));
                         request.setHeader("json", jArray.toString());
-
+                        Log.d("Beforeeee:", "eeeee");
                         HttpResponse response = client.execute(request);
+
                         HttpEntity entity = response.getEntity();
                         // If the response does not enclose an entity, there is no need
+                        Log.d("Afterrrr:", ""+entity);
 
                         if (entity != null) {
                             InputStream instream = entity.getContent();
@@ -131,6 +135,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
                             String result = getStringFromInputStream(instream);
                             if (result.equalsIgnoreCase("true")) {
+
+                                Log.d("Synciinnnng", "1");
 
                                 newDB.rawQuery("UPDATE "+ cq.getString(0) + " SET synced= 1",null);
 

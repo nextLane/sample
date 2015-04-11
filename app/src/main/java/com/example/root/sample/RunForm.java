@@ -13,6 +13,15 @@ package com.example.root.sample;
         import android.util.Log;
 
         import java.io.ByteArrayInputStream;
+        import java.io.DataInputStream;
+        import java.io.DataOutputStream;
+        import java.io.File;
+        import java.io.FileInputStream;
+        import java.io.FileNotFoundException;
+        import java.io.IOException;
+        import java.net.HttpURLConnection;
+        import java.net.MalformedURLException;
+        import java.net.ProtocolException;
         import java.net.URL;
         import java.net.URLConnection;
         import java.io.InputStream;
@@ -48,6 +57,7 @@ package com.example.root.sample;
 public class RunForm extends Activity {
     /** Called when the activity is first created. */
     String tag = RunForm.class.getName();
+
     XmlGuiForm theForm;
     ProgressDialog progressDialog;
     Handler progressHandler;
@@ -58,21 +68,32 @@ public class RunForm extends Activity {
     SQLiteDatabase db;
     XmlGuiFormField f1;
     SQLiteOpenHelper help;
-    String path = "";
-    Uri pickedImage;
+    public String path ;
+
+    String ngoid="";
+    String volid="";
+    public Uri pickedImage;
+    private static int LOAD_IMAGE_RESULT = 1;
+    String formNumber = "";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //textview = new XmlGuiEditBox(null,null,null);
 
-        String formNumber = "";
+
+
         Intent startingIntent = getIntent();
         if(startingIntent == null) {
             Log.e(tag,"No Intent?  We're not supposed to be here...");
             finish();
             return;
         }
+
+        //192.168.3.1
         formNumber = startingIntent.getStringExtra("ID");
+        ngoid = startingIntent.getStringExtra("ngoID");
+        volid = startingIntent.getStringExtra("volid");
         Log.i(tag,"Running Form [" + formNumber + "]");
         if (GetFormData(formNumber)) {
             DisplayForm();
@@ -88,14 +109,20 @@ public class RunForm extends Activity {
 
         }
     }
+    public void onBackPressed() {
+        // Write your code here
 
+        // Switching to ListView screen
+        Intent i = new Intent(getApplicationContext(), AndroidSQLite.class);
+        i.putExtra("ngoid", ngoid);
+        i.putExtra("volid", volid);
+        startActivity(i);
+         }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private boolean DisplayForm()
-    {
+    private boolean DisplayForm() {
 
-        try
-        {
+        try {
             ScrollView sv = new ScrollView(this);
 
             final LinearLayout ll = new LinearLayout(this);
@@ -105,34 +132,35 @@ public class RunForm extends Activity {
             //   ll.setOrientation(SCROLLBAR_POSITION_RIGHT);
             // walk thru our form elements and dynamically create them, leveraging our mini library of tools.
             int i;
-            for (i=0;i<theForm.fields.size();i++) {
+            for (i = 0; i < theForm.fields.size(); i++) {
                 if (theForm.fields.elementAt(i).getType().equals("text")) {
-                    theForm.fields.elementAt(i).obj = new XmlGuiEditBox(this,(theForm.fields.elementAt(i).isRequired() ? "*" : "") + theForm.fields.elementAt(i).getLabel(),"");
+                    theForm.fields.elementAt(i).obj = new XmlGuiEditBox(this, (theForm.fields.elementAt(i).isRequired() ? "*" : "") + theForm.fields.elementAt(i).getLabel(), "");
                     ll.addView((View) theForm.fields.elementAt(i).obj);
                 }
                 if (theForm.fields.elementAt(i).getType().equals("numeric")) {
-                    theForm.fields.elementAt(i).obj = new XmlGuiEditBox(this,(theForm.fields.elementAt(i).isRequired() ? "*" : "") + theForm.fields.elementAt(i).getLabel(),"");
-                    ((XmlGuiEditBox)theForm.fields.elementAt(i).obj).makeNumeric();
+                    theForm.fields.elementAt(i).obj = new XmlGuiEditBox(this, (theForm.fields.elementAt(i).isRequired() ? "*" : "") + theForm.fields.elementAt(i).getLabel(), "");
+                    ((XmlGuiEditBox) theForm.fields.elementAt(i).obj).makeNumeric();
                     ll.addView((View) theForm.fields.elementAt(i).obj);
                 }
                 if (theForm.fields.elementAt(i).getType().equals("choice")) {
-                    theForm.fields.elementAt(i).obj = new XmlGuiPickOne(this,(theForm.fields.elementAt(i).isRequired() ? "*" : "") + theForm.fields.elementAt(i).getLabel(),theForm.fields.elementAt(i).getOptions());
+                    theForm.fields.elementAt(i).obj = new XmlGuiPickOne(this, (theForm.fields.elementAt(i).isRequired() ? "*" : "") + theForm.fields.elementAt(i).getLabel(), theForm.fields.elementAt(i).getOptions());
                     ll.addView((View) theForm.fields.elementAt(i).obj);
                 }
-                if (theForm.fields.elementAt(i).getType().equals("CheckBox")){
-                    theForm.fields.elementAt(i).obj = new XmlGuiCheckbox(this,(theForm.fields.elementAt(i).isRequired() ? "*" : "") + theForm.fields.elementAt(i).getLabel(),theForm.fields.elementAt(i).getOptions());
+                if (theForm.fields.elementAt(i).getType().equals("CheckBox")) {
+                    theForm.fields.elementAt(i).obj = new XmlGuiCheckbox(this, (theForm.fields.elementAt(i).isRequired() ? "*" : "") + theForm.fields.elementAt(i).getLabel(), theForm.fields.elementAt(i).getOptions());
                     ll.addView((View) theForm.fields.elementAt(i).obj);
                 }
-                if (theForm.fields.elementAt(i).getType().equals("CheckBox2")){
-                    theForm.fields.elementAt(i).obj = new XmlGuiCheckbox(this,(theForm.fields.elementAt(i).isRequired() ? "*" : "") + theForm.fields.elementAt(i).getLabel(),theForm.fields.elementAt(i).getOptions());
+                if (theForm.fields.elementAt(i).getType().equals("CheckBox2")) {
+                    theForm.fields.elementAt(i).obj = new XmlGuiCheckbox2(this, (theForm.fields.elementAt(i).isRequired() ? "*" : "") + theForm.fields.elementAt(i).getLabel(), theForm.fields.elementAt(i).getOptions());
                     ll.addView((View) theForm.fields.elementAt(i).obj);
                 }
+
 
             }
 
             setContentView(sv);
-            Button btn = new Button(this);
-            btn.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
+            final Button btn = new Button(this);
+            btn.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
             ll.addView(btn);
             btn.setGravity(View.FOCUS_LEFT);
@@ -140,8 +168,11 @@ public class RunForm extends Activity {
             btn.setOnClickListener(new Button.OnClickListener() {
                 public void onClick(View v) {
                     Submission();
+
+                       btn.setText("dfdf");
+
                     // check if this form is Valid
-	        		/*if (!CheckForm())
+                    /*if (!CheckForm())
 	        		{
 	        			AlertDialog.Builder bd = new AlertDialog.Builder(ll.getContext());
 	            		AlertDialog ad = bd.create();
@@ -174,16 +205,17 @@ public class RunForm extends Activity {
 	        		}*/
 
                 }
-            } );
+            });
             Button btn1 = new Button(this);
-            btn.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
+            btn.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             ll.addView(btn1);
             btn1.setGravity(View.FOCUS_LEFT);
             btn1.setText("NEW");
             btn1.setOnClickListener(new Button.OnClickListener() {
                 public void onClick(View v) {
                     // Clearform();
-                    GetFormData(theForm.getFormNumber());
+                    GetFormData(formNumber);
+
                     //textview.setValue(null);
                     DisplayForm();
                 }
@@ -209,27 +241,29 @@ public class RunForm extends Activity {
 
                 }
             });
-            Button btn3 = new Button(this);
-            btn3.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
+            final Button btn3 = new Button(this);
+            btn3.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             ll.addView(btn3);
             btn3.setGravity(View.FOCUS_LEFT);
             btn3.setText("Select PHOTO");
             btn3.setOnClickListener(new Button.OnClickListener() {
                 public void onClick(View v) {
-                    int j=1;
+                    int j = 1;
                     Intent i = new Intent(
                             Intent.ACTION_GET_CONTENT);
                     // android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    i.setType("image/png");
-                    i.setType("image/jpeg");
-                    i.setType("image/gif");
-                    startActivityForResult(i, 1);
+                    i.setType("image/*");
+                    //i.setType("image/jpeg");
+                    //i.setType("image/gif");
+                    startActivityForResult(i, LOAD_IMAGE_RESULT);
+
+                    // System.out.println(getpathfromUri(pickedImage));
                     //  String[] filePath = { MediaStore.Images.Media.DATA };
 
-
-                    Log.v("++++++",path);
-
-
+                    //pickedImage = i.getData();
+                    //Log.v("++++++",pickedImage.toString());
+                    //System.out.println("????????????" + pickedImage);
+                    //path = getRealPathFromURI(pickedImage);
 
 
                     //  Cursor cursor = getContentResolver().query(i.getData(), filePath, null, null, null);
@@ -237,21 +271,37 @@ public class RunForm extends Activity {
                     //path = cursor.getString(cursor.getColumnIndex(filePath[0]));
                     // cursor.close();
                 }
+
                 //}
             });
-
+            Button btn4 = new Button(this);
+            btn4.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            ll.addView(btn4);
+            btn4.setGravity(View.FOCUS_LEFT);
+            btn4.setText("print PHOTO");
+            btn4.setOnClickListener(new Button.OnClickListener() {
+                public void onClick(View v) {
+                    System.out.println(getpathfromUri(pickedImage));
+                    btn3.setText(getpathfromUri(pickedImage));
+                }
+            });
+            //TextView txt = null;
+            //txt.setText(path);
+            //System.out.println(getpathfromUri(pickedImage));
             setTitle(theForm.getFormName());
 
             return true;
 
         } catch (Exception e) {
-            Log.e(tag,"Error Displaying Form");
+            Log.e(tag, "Error Displaying Form");
             return false;
         }
     }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
+        if (requestCode == LOAD_IMAGE_RESULT && resultCode == RESULT_OK && data != null) {
             pickedImage = data.getData();
 
         }
@@ -263,25 +313,135 @@ public class RunForm extends Activity {
         cursor.moveToFirst();
         path = cursor.getString(cursor.getColumnIndex(filePath[0]));
         cursor.close();
+        System.out.println(path);
         return path;
     }
-    private void Image(){
-        final Uri fileUri;
-        Intent intent= new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        //fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
 
+   /* protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
+            pickedImage = data.getData();
+
+        }
+    }*/
+
+    /*    private String getRealPathFromURI(Uri contentURI) {
+            String result;
+            System.out.println(contentURI + ">>>>");
+
+            Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+            if (cursor == null) {
+                result = contentURI.getPath().toString();
+            } else {
+                cursor.moveToFirst();
+                int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+                result = cursor.getString(idx).toString();
+                cursor.close();
+            }
+            return result;
+        }
+    */
+    /*public String getpathfromUri(Uri contentUri){
+        String[] filePath = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getContentResolver().query(pickedImage, filePath, null, null, null);
+        cursor.moveToFirst();
+        path = cursor.getString(cursor.getColumnIndex(filePath[0]));
+        cursor.close();
+        return path;
     }
-    private void Submission(){
-        db=openOrCreateDatabase("surdb",MODE_PRIVATE,null);
-        String query = "CREATE TABLE IF NOT EXISTS " + theForm.getFormName() + "(";
+    */
+    private void Image_submit() {
+        final Uri fileUri;
+        HttpURLConnection connect = null;
+        //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        //fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
+        //String uploadUri = "";
+        String twoHyphens="--";
+        String lineEnd = "\r\n";
+        String boundary = "*****";
+        DataOutputStream out = null;
+        DataInputStream inStream = null;
+        int bytesRead,bytesAvailable,bufferSize;
+        String filepath = getpathfromUri(pickedImage);
+        byte[] buffer;
+        int maxBufferSize = 1*1024*1024;
+        String urlString = "address";
+        try{
+
+
+            FileInputStream fileinputStream = new FileInputStream(new File(filepath));
+            URL url = new URL(urlString);
+            connect = (HttpURLConnection) url.openConnection();
+            connect.setDoInput(true);
+            connect.setDoOutput(true);
+            connect.setUseCaches(false);
+
+            connect.setRequestMethod("POST");
+            connect.setRequestProperty("Connection", "Keep-Alive");
+            connect.setRequestProperty("Content-Type", "multipart/form-data;boundary="+boundary);
+            out = new DataOutputStream( connect.getOutputStream() );
+            out.writeBytes(twoHyphens + boundary + lineEnd);
+            out.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\"" + filepath + "\"" + lineEnd);
+            out.writeBytes(lineEnd);
+            Log.e("MediaPlayer","Headers are written");
+            bytesAvailable = fileinputStream.available();
+            bufferSize = Math.min(bytesAvailable, maxBufferSize);
+            buffer = new byte[bufferSize];
+            bytesRead = fileinputStream.read(buffer, 0, bufferSize);
+            while (bytesRead > 0)
+            {
+                out.write(buffer, 0, bufferSize);
+                bytesAvailable = fileinputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                bytesRead = fileinputStream.read(buffer, 0, bufferSize);
+            }
+            out.writeBytes(lineEnd);
+            out.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+            BufferedReader in = new BufferedReader(new InputStreamReader(connect.getInputStream()));
+            String inputLine;
+            // Appendable tv;
+            while ((inputLine = in.readLine()) != null)
+
+                Log.e("MediaPlayer","File is written");
+            fileinputStream.close();
+            out.flush();
+            out.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            inStream = new DataInputStream ( connect.getInputStream() );
+            String str;
+            while (( str = inStream.readLine()) != null)
+            {
+                Log.e("MediaPlayer","Server Response"+str);
+            }
+        /*while((str = inStream.readLine()) !=null ){
+
+        }*/
+            inStream.close();
+        }
+        catch (IOException ioex){
+            Log.e("MediaPlayer", "error: " + ioex.getMessage(), ioex);
+        }
+    }
+
+    // }
+
+    private void Submission() {
+        Log.d("XXX:","Entered Submission, let's see!");
+        db = openOrCreateDatabase("MY_DATABASE", MODE_PRIVATE, null);
+        String query = "CREATE TABLE IF NOT EXISTS " + ngoid +"_"+theForm.getFormNumber() + "(";
         // db.execSQL("create table if not exists surtable(fname VARCHAR,lname VARCHAR)");
         // getWritableDatabase.insert()
-        String x1,x2,x3,x4,x5,y,z;
-        ContentValues values=new ContentValues(theForm.fields.size());
-        String aa= theForm.getFormName();
+        String x1, x2, x3, x4, x5, y, z;
+        ContentValues values = new ContentValues(theForm.fields.size());
+        String aa = ngoid +"_"+theForm.getFormNumber();
         List<String> l = new ArrayList<String>();
         List<String> m = new ArrayList<String>();
-        for(int i=0; i<theForm.fields.size();i++){
+        for (int i = 0; i < theForm.fields.size(); i++) {
             // if (theForm.fields.elementAt(i).getType().equals("text")) {
             //x1 = textview.getValue();
             //     x1 = theForm.fields.elementAt(i).getData().toString();
@@ -306,10 +466,10 @@ public class RunForm extends Activity {
                 //y = l.get(i);
                 //db.insert(aa,null,values);
             }
-            if (theForm.fields.elementAt(i).getType().equals("choice")){
+            if (theForm.fields.elementAt(i).getType().equals("choice")) {
                 //x3 = spinview.getValue();
                 //x3 = theForm.fields.elementAt(i).getData().toString();
-                z= theForm.fields.elementAt(i).getLabel().toString();
+                z = theForm.fields.elementAt(i).getLabel().toString();
                 //values.put(z,x3);
                 query += z;
                 query += " VARCHAR,";
@@ -317,10 +477,10 @@ public class RunForm extends Activity {
                 //y=l.get(i);
                 //db.insert(aa,null,values);
             }
-            if(theForm.fields.elementAt(i).getType().equals("CheckBox")){
+            if (theForm.fields.elementAt(i).getType().equals("CheckBox")) {
                 //x4 = check.getValue();
                 //   x4 = theForm.fields.elementAt(i).getData().toString();
-                z=theForm.fields.elementAt(i).getLabel().toString();
+                z = theForm.fields.elementAt(i).getLabel().toString();
                 //  values.put(z,x4);
                 //l.add(x4);
                 query += z;
@@ -328,7 +488,7 @@ public class RunForm extends Activity {
                 //y=l.get(i);
                 //db.insert(aa,null,values);
             }
-           /* if(theForm.fields.elementAt(i).getType().equals("CheckBox2")){
+            /*if (theForm.fields.elementAt(i).getType().equals("CheckBox2")) {
                 //m= check2.getValue();
                 //m = (List<String>) theForm.fields.elementAt(i).getData();
                 //String data = "";
@@ -337,19 +497,21 @@ public class RunForm extends Activity {
                 //    data += ",";
                 //}
                 //data = data.substring(0, data.length()-1);
-                z=theForm.fields.elementAt(i).getLabel();
+                z = theForm.fields.elementAt(i).getLabel();
                 //values.put("z", data);
                 query += z;
                 query += " VARCHAR,";
-               // db.insert(aa,null,values);
+                // db.insert(aa,null,values);
             }
 */
 
         }
-        query = query.substring(0, query.length()-1);
-        query += ")";
+        query += "synced INT DEFAULT 0)";
+        //query = query.substring(0, query.length() - 1);
+
         db.execSQL(query);
-        for(int i=0; i<theForm.fields.size();i++){
+
+        for (int i = 0; i < theForm.fields.size(); i++) {
             if (theForm.fields.elementAt(i).getType().equals("text")) {
                 //x1 = textview.getValue();
                 x1 = theForm.fields.elementAt(i).getData().toString();
@@ -357,10 +519,10 @@ public class RunForm extends Activity {
                 z = theForm.fields.elementAt(i).getLabel().toString();
                 //   query += z;
                 //  query += " VARCHAR,";
-                values.put(z,x1);
+                values.put(z, x1);
                 l.add(x1);
                 //y = l.get(i);
-                db.insert(aa,null,values);
+                db.insert(aa, null, values);
 
             }
             //if (theForm.fields.elementAt(i).getType().equals("text")) {
@@ -374,51 +536,58 @@ public class RunForm extends Activity {
             //  y = l.get(i);
             // db.insert(aa,null,values);
             //  }
-            if (theForm.fields.elementAt(i).getType().equals("choice")){
+            if (theForm.fields.elementAt(i).getType().equals("choice")) {
                 //x3 = spinview.getValue();
                 x3 = theForm.fields.elementAt(i).getData().toString();
-                z= theForm.fields.elementAt(i).getLabel().toString();
-                values.put(z,x3);
+                z = theForm.fields.elementAt(i).getLabel().toString();
+                values.put(z, x3);
                 // query += z;
                 // query += " VARCHAR,";
                 l.add(x3);
                 //y=l.get(i);
-                db.insert(aa,null,values);
+                db.insert(aa, null, values);
             }
-            if(theForm.fields.elementAt(i).getType().equals("CheckBox")){
+            if (theForm.fields.elementAt(i).getType().equals("CheckBox")) {
                 //x4 = check.getValue();
                 x4 = theForm.fields.elementAt(i).getData().toString();
-                z=theForm.fields.elementAt(i).getLabel().toString();
-                values.put(z,x4);
+                z = theForm.fields.elementAt(i).getLabel().toString();
+                values.put(z, x4);
                 l.add(x4);
                 //query += z;
                 //query += " VARCHAR,";
                 //y=l.get(i);
-                db.insert(aa,null,values);
+                db.insert(aa, null, values);
             }
-            //if(theForm.fields.elementAt(i).getType().equals("CheckBox2")){
-            //m= check2.getValue();
-            //  m = (List<String>) theForm.fields.elementAt(i).getData();
-            // String data = "";
-            //for (int j = 0; j < m.size(); j++) {
-            //  data+= m.get(j);
-            //  data += ",";
-            //}
-            //data = data.substring(0, data.length()-1);
-            //z=theForm.fields.elementAt(i).getLabel();
-            //values.put(z, data);
-            //query += z;
-            //query += " VARCHAR,";
-            // db.insert(aa,null,values);
-            //}
-
-
+            /*if (theForm.fields.elementAt(i).getType().equals("CheckBox2")) {
+                // m= check2.getValue().toString();
+                int j = 0;
+                m = (List<String>) theForm.fields.elementAt(i).getData();
+                System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                System.out.println(m);
+                //Log.i("fhf");
+                //Log.v()
+                //Log.v();
+                String data = "";
+                for (j = 0; j < m.size(); j++) {
+                    data += m.get(j);
+                    data += ",";
+                }
+                data = data.substring(0, data.length() - 1);
+                z = theForm.fields.elementAt(i).getLabel();
+                values.put(z, data);
+                //query += z;
+                //query += " VARCHAR,";
+                // db.insert(aa,null,values);
+            }
+        */
         }
         db.close();
 
-        //db.execSQL();
 
     }
+
+
+
     private boolean SubmitForm()
     {
         try {

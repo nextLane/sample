@@ -3,7 +3,7 @@ package com.example.root.sample;
 /**
  * Created by Author: Aditi Bhatnagar
 
- */
+ */ //192.168.64.1
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -57,22 +57,40 @@ public class SQLiteAdapter {
 
         ArrayList<String> arrTblNames = new ArrayList<String>();
         SQLiteDatabase db= this.getReadableDb();
-        Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
-        c.moveToFirst();
-        while (!c.isAfterLast()) {
+      //  Cursor c = db.rawQuery("SELECT name FROM MY_DATABASE WHERE type='table'", null);
 
-            arrTblNames.add(c.getString(c.getColumnIndex("name")));
-            c.moveToNext();
+      //  Cursor c= db.rawQuery("SHOW TABLES",null);
+
+       // SqlHelper sqlHelper = new SqlHelper(this, "TK.db", null, 1);
+        //SQLiteDatabase DB = this.getWritableDatabase();
+        sqLiteHelper = new SQLiteHelper(context, MYDATABASE_NAME, null, MYDATABASE_VERSION);
+        SQLiteDatabase DB = sqLiteHelper.getWritableDatabase();
+
+        Cursor c = DB.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+        while(c.moveToNext()){
+            String s = c.getString(0);
+            if(s.equals("android_metadata") ||s.equals("MYTABLE") )
+            {
+                //System.out.println("Get Metadata");
+                continue;
+            }
+            else
+            {
+                arrTblNames.add(s);
+            }
         }
+
         // make sure to close the cursor
+       DB.close();
+        db.close();
         c.close();
         return arrTblNames;
     }
 
-    public SQLiteAdapter openToWrite() throws android.database.SQLException {
+    public SQLiteDatabase openToWrite() throws android.database.SQLException {
         sqLiteHelper = new SQLiteHelper(context, MYDATABASE_NAME, null, MYDATABASE_VERSION);
         sqLiteDatabase = sqLiteHelper.getWritableDatabase();
-        return this;
+        return sqLiteDatabase;
     }
 
     public void close(){
@@ -129,19 +147,7 @@ public class SQLiteAdapter {
             // TODO Auto-generated method stub
             db.execSQL(SCRIPT_CREATE_DATABASE);
             //TO BE REMOVED.
-            db.execSQL("CREATE TABLE table1 ( ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                            "Name" + " TEXT NOT NULL, " +
-                            "Surname" + " TEXT NOT NULL);"
-            );
 
-            db.execSQL("CREATE TABLE table2 ( FID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                            "Question" + " TEXT NOT NULL, " +
-                            "Answer" + " TEXT NOT NULL);"
-            );
-            db.execSQL("CREATE TABLE table3 ( ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                            "Day" + " TEXT NOT NULL, " +
-                            "Time" + " TEXT NOT NULL);"
-            );
 
         }
 
