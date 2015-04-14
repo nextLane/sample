@@ -433,12 +433,12 @@ public class RunForm extends Activity {
     private void Submission() {
         Log.d("XXX:","Entered Submission, let's see!");
         db = openOrCreateDatabase("MY_DATABASE", MODE_PRIVATE, null);
-        String query = "CREATE TABLE IF NOT EXISTS " + ngoid +"_"+theForm.getFormNumber() + "(";
+        String query = "CREATE TABLE IF NOT EXISTS " + ngoid +"_"+ formNumber + "(";
         // db.execSQL("create table if not exists surtable(fname VARCHAR,lname VARCHAR)");
         // getWritableDatabase.insert()
         String x1, x2, x3, x4, x5, y, z;
         ContentValues values = new ContentValues(theForm.fields.size());
-        String aa = ngoid +"_"+theForm.getFormNumber();
+        String aa = ngoid +"_"+ formNumber;
         List<String> l = new ArrayList<String>();
         List<String> m = new ArrayList<String>();
         for (int i = 0; i < theForm.fields.size(); i++) {
@@ -522,7 +522,7 @@ public class RunForm extends Activity {
                 values.put(z, x1);
                 l.add(x1);
                 //y = l.get(i);
-                db.insert(aa, null, values);
+              // db.insert(aa, null, values);
 
             }
             //if (theForm.fields.elementAt(i).getType().equals("text")) {
@@ -545,7 +545,7 @@ public class RunForm extends Activity {
                 // query += " VARCHAR,";
                 l.add(x3);
                 //y=l.get(i);
-                db.insert(aa, null, values);
+                //db.insert(aa, null, values);
             }
             if (theForm.fields.elementAt(i).getType().equals("CheckBox")) {
                 //x4 = check.getValue();
@@ -556,7 +556,7 @@ public class RunForm extends Activity {
                 //query += z;
                 //query += " VARCHAR,";
                 //y=l.get(i);
-                db.insert(aa, null, values);
+
             }
             /*if (theForm.fields.elementAt(i).getType().equals("CheckBox2")) {
                 // m= check2.getValue().toString();
@@ -581,6 +581,10 @@ public class RunForm extends Activity {
             }
         */
         }
+
+        values.put("synced",0);
+        Log.d("INSERT:","Inserting into "+aa+"::" +values);
+        db.insert(aa, null, values);
         db.close();
 
 

@@ -7,10 +7,7 @@ package com.example.root.sample;
       import android.content.Context;
       import android.util.SparseBooleanArray;
       import android.widget.ArrayAdapter;
-      import android.widget.CheckBox;
       import android.widget.LinearLayout;
-      import android.widget.RelativeLayout;
-      import android.widget.ScrollView;
       import android.widget.TextView;
       import android.widget.ListView;
       import android.util.AttributeSet;
@@ -37,7 +34,7 @@ public class XmlGuiCheckbox extends LinearLayout {
         opts=options.split("\\|");
 
         aa = new ArrayAdapter<String>( context, android.R.layout.simple_list_item_single_choice,opts);
-        list.setChoiceMode(list.CHOICE_MODE_MULTIPLE);
+        list.setChoiceMode(list.CHOICE_MODE_SINGLE);
         list.setAdapter(aa);
         this.addView(label);
         this.addView(list);

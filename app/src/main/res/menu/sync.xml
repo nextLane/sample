@@ -6,5 +6,8 @@
 
         android:title="@string/sync"
         />
+    <item android:id="@+id/refresh"
 
+        android:title="@string/refresh"
+        />
 </menu>

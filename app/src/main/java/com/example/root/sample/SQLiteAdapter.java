@@ -22,11 +22,15 @@ public class SQLiteAdapter {
     public static final String KEY_ID = "_id";
     public static final String KEY_CONTENT = "Content";
     public static final String KEY_CODE   = "xml";
+    public static final String KEY_VOLID   = "volid";
+    public static final String KEY_NGOID   = "ngoid";
 
     //create table MY_DATABASE (ID integer primary key, Content text not null);
     private static final String SCRIPT_CREATE_DATABASE =
             "create table " + MYDATABASE_TABLE + " ("
                     + KEY_ID + " integer primary key , "
+                    + KEY_VOLID + " integer , "
+                    + KEY_NGOID + " integer , "
                     + KEY_CONTENT + " text not null, "
                     + KEY_CODE + " text not null);";
 
@@ -97,13 +101,14 @@ public class SQLiteAdapter {
         sqLiteHelper.close();
     }
 
-    public long insert(String id, String content, String xml){
+    public long insert(String id, String content, String xml, String volid, String ngoid){
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_ID, id );
         contentValues.put(KEY_CODE, xml );
         contentValues.put(KEY_CONTENT, content);
-
+        contentValues.put(KEY_VOLID, volid );
+        contentValues.put(KEY_NGOID, ngoid );
 
         return sqLiteDatabase.insert(MYDATABASE_TABLE, null, contentValues);
     }
@@ -127,11 +132,11 @@ public class SQLiteAdapter {
 
         return cursor.getString(2);
     }
-    public Cursor queueAll(){
+    public Cursor queueAll(String ngoid, String volid){
         String[] columns = new String[]{KEY_ID, KEY_CONTENT};
-        Cursor cursor = sqLiteDatabase.query(MYDATABASE_TABLE, columns,
-                null, null, null, null, null);
-
+       // Cursor cursor = sqLiteDatabase.query(MYDATABASE_TABLE, columns,
+         //       null, null, null, null, null);
+        Cursor cursor= sqLiteDatabase.rawQuery("SELECT * FROM MYTABLE WHERE ngoid ='"+ngoid+"' AND volid='"+volid+"'", null);
         return cursor;
     }
 

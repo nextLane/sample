@@ -66,6 +66,8 @@ public class XmlGuiFormField {
 	
 	public Object getData()
 	{
+        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<thereeeeeeee");
+        System.out.println(type);
 		if (type.equals("text") || type.equals("numeric"))
 		{
 			if (obj != null) {
@@ -84,10 +86,14 @@ public class XmlGuiFormField {
                 XmlGuiCheckbox pa= (XmlGuiCheckbox) obj;
                 return pa.getValue();
             }
-        if (type.equals("CheckBox2")){
-            if(obj !=null){
-                XmlGuiCheckbox2 pp = (XmlGuiCheckbox2) obj;
-            }
+
+        }
+        else{
+        if(obj !=null){
+        System.out.println("xfdgfgdffh");
+        XmlGuiCheckbox_m sa = (XmlGuiCheckbox_m) obj;
+        System.out.println("hereeeeeeee");
+        return sa.getVal();
         }
         }
 		
