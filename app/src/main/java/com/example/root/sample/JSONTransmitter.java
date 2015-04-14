@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 public class JSONTransmitter extends AsyncTask<Void,Void, String > {
 
-String url = "http://192.168.83.1:80/surveyor/updateDatabase.php/";
+String url = "";
 
 JSONArray json;
 String response=null;
@@ -99,8 +99,10 @@ String response=null;
            SQLiteDatabase newDB= sla.openToWrite();
            Log.d("dbbbbb:", newDB.isOpen()+"" );
             Log.d("resssssssssp", s);
-            newDB.rawQuery("UPDATE " + p.get(i) + " SET synced = 1", null);
+           newDB.execSQL("UPDATE "+ p.get(i) +" SET synced = 1 where synced=0");
 
+         //   newDB.("UPDATE D45_3 SET synced = 1 where synced=0", null);
+           Log.d("Updated to 1:","ddddddd");
            sla.close();
            newDB.close();
 

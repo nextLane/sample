@@ -459,9 +459,10 @@ public class AndroidSQLite extends Activity {
 
                         Log.d("Tblllll:", p.get(i));
                         int cnt = c.getColumnCount();
+                        Log.d("Unsssscolcnt:",cnt+"" );
                         if (c.getCount() == 0) {
                             c.close();
-                            Log.d("", "no items on the table");
+                            Log.d("", "no items on the table to be synced.");
                         } else {
 
                             JSONArray jArray = new JSONArray();
@@ -500,7 +501,7 @@ public class AndroidSQLite extends Activity {
                             //request.setHeader("json", jArray.toString());
                             Log.d("Beforeeee:", "eeeee");
                            // HttpResponse response = client.execute(request);
-                            JSONTransmitter jt = new JSONTransmitter(jArray,url,p,i,newDB, this.getBaseContext());
+                            JSONTransmitter jt = new JSONTransmitter(jArray,url,p,i,newDB, this);
                             jt.execute();
                             String result= jt.getResult();
                             // HttpEntity entity = response.getEntity();

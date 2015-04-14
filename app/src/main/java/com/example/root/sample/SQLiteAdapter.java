@@ -132,6 +132,11 @@ public class SQLiteAdapter {
 
         return cursor.getString(2);
     }
+
+    public void updateSync()
+    {
+
+    }
     public Cursor queueAll(String ngoid, String volid){
         String[] columns = new String[]{KEY_ID, KEY_CONTENT};
        // Cursor cursor = sqLiteDatabase.query(MYDATABASE_TABLE, columns,
