@@ -5,6 +5,7 @@ package com.example.root.sample;
         import android.app.Activity;
         import android.app.AlertDialog;
         import android.content.ContentValues;
+        import android.media.Image;
         import android.net.Uri;
         import android.os.Build;
         import android.os.Bundle;
@@ -53,6 +54,7 @@ package com.example.root.sample;
         import android.database.sqlite.SQLiteDatabase;
         import android.database.sqlite.SQLiteOpenHelper;
         import android.database.Cursor;
+        import android.widget.Toast;
 
 public class RunForm extends Activity {
     /** Called when the activity is first created. */
@@ -64,7 +66,7 @@ public class RunForm extends Activity {
     XmlGuiEditBox textview ;
     XmlGuiPickOne spinview;
     XmlGuiCheckbox check2;
-    XmlGuiCheckbox2 check;
+    //XmlGuiCheckbox2 check;
     SQLiteDatabase db;
     XmlGuiFormField f1;
     SQLiteOpenHelper help;
@@ -151,7 +153,7 @@ public class RunForm extends Activity {
                     ll.addView((View) theForm.fields.elementAt(i).obj);
                 }
                 if (theForm.fields.elementAt(i).getType().equals("CheckBox2")) {
-                    theForm.fields.elementAt(i).obj = new XmlGuiCheckbox2(this, (theForm.fields.elementAt(i).isRequired() ? "*" : "") + theForm.fields.elementAt(i).getLabel(), theForm.fields.elementAt(i).getOptions());
+                    theForm.fields.elementAt(i).obj = new XmlGuiCheckbox_m(this, (theForm.fields.elementAt(i).isRequired() ? "*" : "") + theForm.fields.elementAt(i).getLabel(), theForm.fields.elementAt(i).getOptions());
                     ll.addView((View) theForm.fields.elementAt(i).obj);
                 }
 
@@ -169,7 +171,9 @@ public class RunForm extends Activity {
                 public void onClick(View v) {
                     Submission();
 
-                       btn.setText("dfdf");
+                    Toast.makeText(RunForm.this, "Submitted ! ", Toast.LENGTH_LONG).show();
+
+
 
                     // check if this form is Valid
                     /*if (!CheckForm())
@@ -256,14 +260,14 @@ public class RunForm extends Activity {
                     //i.setType("image/jpeg");
                     //i.setType("image/gif");
                     startActivityForResult(i, LOAD_IMAGE_RESULT);
-
+                    Image_submit();
                     // System.out.println(getpathfromUri(pickedImage));
                     //  String[] filePath = { MediaStore.Images.Media.DATA };
 
                     //pickedImage = i.getData();
                     //Log.v("++++++",pickedImage.toString());
                     //System.out.println("????????????" + pickedImage);
-                    //path = getRealPathFromURI(pickedImage);
+                   //path = getRealPathFromURI(pickedImage);
 
 
                     //  Cursor cursor = getContentResolver().query(i.getData(), filePath, null, null, null);
@@ -274,7 +278,7 @@ public class RunForm extends Activity {
 
                 //}
             });
-            Button btn4 = new Button(this);
+            /*Button btn4 = new Button(this);
             btn4.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             ll.addView(btn4);
             btn4.setGravity(View.FOCUS_LEFT);
@@ -284,7 +288,7 @@ public class RunForm extends Activity {
                     System.out.println(getpathfromUri(pickedImage));
                     btn3.setText(getpathfromUri(pickedImage));
                 }
-            });
+            });*/
             //TextView txt = null;
             //txt.setText(path);
             //System.out.println(getpathfromUri(pickedImage));
@@ -365,7 +369,7 @@ public class RunForm extends Activity {
         String filepath = getpathfromUri(pickedImage);
         byte[] buffer;
         int maxBufferSize = 1*1024*1024;
-        String urlString = "address";
+        String urlString = "address";  //<<<<<<<<<<<<<<<<<
         try{
 
 
@@ -442,23 +446,36 @@ public class RunForm extends Activity {
         List<String> l = new ArrayList<String>();
         List<String> m = new ArrayList<String>();
         for (int i = 0; i < theForm.fields.size(); i++) {
-            // if (theForm.fields.elementAt(i).getType().equals("text")) {
-            //x1 = textview.getValue();
-            //     x1 = theForm.fields.elementAt(i).getData().toString();
-            //Log.v("++++++", x1.toString());
-            //   z = theForm.fields.elementAt(i).getLabel().toString();
-            // query += z;
-            //query += " VARCHAR,";
-            //       values.put(z,x1);
-            //   l.add(x1);
-            //  y = l.get(i);
-            // db.insert(aa,null,values);
+            if (theForm.fields.elementAt(i).getType().equals("numeric")) {
+                //x1 = textview.getValue();
+                //     x1 = theForm.fields.elementAt(i).getData().toString();
+                //Log.v("++++++", x1.toString());
+                z = theForm.fields.elementAt(i).getLabel().toString();
+                z= z.replaceAll("\\s+","");
+                z=z.replaceAll("<","oa");
+                z= z.replaceAll(">","ca");
+                z=z.replaceAll("</","oba");
+                z=z.replaceAll("/>","cba");
+                z=z.replaceAll(":","");;
+                System.out.println(z+"this is the column ");
+                query += z;
+                query += " INT,";
+                //       values.put(z,x1);
+                //   l.add(x1);
+                //  y = l.get(i);
+                // db.insert(aa,null,values);
 
-            //}
+            }
             if (theForm.fields.elementAt(i).getType().equals("text")) {
                 //x2 = textview.getValue();
                 //x2 = theForm.fields.elementAt(i).getData().toString();
                 z = theForm.fields.elementAt(i).getLabel().toString();
+                z= z.replaceAll("\\s+","");
+                z=z.replaceAll("<","oa");
+                z= z.replaceAll(">","ca");
+                z=z.replaceAll("</","oba");
+                z=z.replaceAll("/>","cba");
+                z=z.replaceAll(":","");;
                 //values.put(z,x2);
                 query += z;
                 query += " VARCHAR,";
@@ -470,6 +487,12 @@ public class RunForm extends Activity {
                 //x3 = spinview.getValue();
                 //x3 = theForm.fields.elementAt(i).getData().toString();
                 z = theForm.fields.elementAt(i).getLabel().toString();
+                z= z.replaceAll("\\s+","");
+                z=z.replaceAll("<","oa");
+                z= z.replaceAll(">","ca");         
+                z=z.replaceAll("</","oba");         
+                z=z.replaceAll("/>","cba");         
+                z=z.replaceAll(":","");
                 //values.put(z,x3);
                 query += z;
                 query += " VARCHAR,";
@@ -481,6 +504,13 @@ public class RunForm extends Activity {
                 //x4 = check.getValue();
                 //   x4 = theForm.fields.elementAt(i).getData().toString();
                 z = theForm.fields.elementAt(i).getLabel().toString();
+                z= z.replaceAll("\\s+","");
+                z= z.replaceAll("\\s+","");
+                z=z.replaceAll("<","oa");
+                z= z.replaceAll(">","ca");
+                z=z.replaceAll("</","oba");
+                z=z.replaceAll("/>","cba");
+                z=z.replaceAll(":","");
                 //  values.put(z,x4);
                 //l.add(x4);
                 query += z;
@@ -488,22 +518,29 @@ public class RunForm extends Activity {
                 //y=l.get(i);
                 //db.insert(aa,null,values);
             }
-            /*if (theForm.fields.elementAt(i).getType().equals("CheckBox2")) {
+            if (theForm.fields.elementAt(i).getType().equals("CheckBox2")) {
                 //m= check2.getValue();
                 //m = (List<String>) theForm.fields.elementAt(i).getData();
                 //String data = "";
                 //for (int j = 0; j < m.size(); j++) {
-                //    data+= m.get(j);
-                //    data += ",";
+                //   data+= m.get(j);
+                //  data += ",";
                 //}
                 //data = data.substring(0, data.length()-1);
                 z = theForm.fields.elementAt(i).getLabel();
+                z= z.replaceAll("\\s+","");
+                z= z.replaceAll("\\s+","");
+                z=z.replaceAll("<","oa");
+                z= z.replaceAll(">","ca");
+                z=z.replaceAll("</","oba");
+                z=z.replaceAll("/>","cba");
+                z=z.replaceAll(":","");
                 //values.put("z", data);
                 query += z;
                 query += " VARCHAR,";
                 // db.insert(aa,null,values);
             }
-*/
+
 
         }
         query += "synced INT DEFAULT 0)";
@@ -517,6 +554,15 @@ public class RunForm extends Activity {
                 x1 = theForm.fields.elementAt(i).getData().toString();
                 Log.v("++++++", x1.toString());
                 z = theForm.fields.elementAt(i).getLabel().toString();
+              
+                z= z.replaceAll("\\s+","");
+                z= z.replaceAll("\\s+","");
+                z=z.replaceAll("<","oa");
+                z= z.replaceAll(">","ca");
+                z=z.replaceAll("</","oba");
+                z=z.replaceAll("/>","cba");
+                z=z.replaceAll(":","");
+
                 //   query += z;
                 //  query += " VARCHAR,";
                 values.put(z, x1);
@@ -525,32 +571,56 @@ public class RunForm extends Activity {
               // db.insert(aa, null, values);
 
             }
-            //if (theForm.fields.elementAt(i).getType().equals("text")) {
+            if (theForm.fields.elementAt(i).getType().equals("numeric")) {
             //x2 = textview.getValue();
-            //    x2 = theForm.fields.elementAt(i).getData().toString();
-            //   z = theForm.fields.elementAt(i).getLabel().toString();
-            //  values.put(z,x2);
+                x2 = theForm.fields.elementAt(i).getData().toString();
+               z = theForm.fields.elementAt(i).getLabel().toString();
+                z= z.replaceAll("\\s+","");
+                z= z.replaceAll("\\s+","");
+                z=z.replaceAll("<","oa");
+                z= z.replaceAll(">","ca");
+                z=z.replaceAll("</","oba");
+                z=z.replaceAll("/>","cba");
+                z=z.replaceAll(":","");
+
+                values.put(z,x2);
             // query += z;
             // query += " VARCHAR,";
             // l.add(x2);
             //  y = l.get(i);
-            // db.insert(aa,null,values);
+             //db.insert(aa,null,values);
             //  }
             if (theForm.fields.elementAt(i).getType().equals("choice")) {
                 //x3 = spinview.getValue();
                 x3 = theForm.fields.elementAt(i).getData().toString();
                 z = theForm.fields.elementAt(i).getLabel().toString();
+                z= z.replaceAll("\\s+","");
+                z= z.replaceAll("\\s+","");
+                z=z.replaceAll("<","oa");
+                z= z.replaceAll(">","ca");
+                z=z.replaceAll("</","oba");
+                z=z.replaceAll("/>","cba");
+                z=z.replaceAll(":","");
+
                 values.put(z, x3);
                 // query += z;
                 // query += " VARCHAR,";
                 l.add(x3);
                 //y=l.get(i);
-                //db.insert(aa, null, values);
+               // db.insert(aa, null, values);
             }
             if (theForm.fields.elementAt(i).getType().equals("CheckBox")) {
                 //x4 = check.getValue();
                 x4 = theForm.fields.elementAt(i).getData().toString();
                 z = theForm.fields.elementAt(i).getLabel().toString();
+               
+                z= z.replaceAll("\\s+","");
+                z=z.replaceAll("<","oa");
+                z= z.replaceAll(">","ca");
+                z=z.replaceAll("</","oba");
+                z=z.replaceAll("/>","cba");
+                z=z.replaceAll(":","");
+
                 values.put(z, x4);
                 l.add(x4);
                 //query += z;
@@ -558,9 +628,10 @@ public class RunForm extends Activity {
                 //y=l.get(i);
 
             }
-            /*if (theForm.fields.elementAt(i).getType().equals("CheckBox2")) {
-                // m= check2.getValue().toString();
-                int j = 0;
+
+                if (theForm.fields.elementAt(i).getType().equals("CheckBox2")) {
+
+                /*int j = 0;
                 m = (List<String>) theForm.fields.elementAt(i).getData();
                 System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                 System.out.println(m);
@@ -577,9 +648,28 @@ public class RunForm extends Activity {
                 values.put(z, data);
                 //query += z;
                 //query += " VARCHAR,";
-                // db.insert(aa,null,values);
+                // db.insert(aa,null,values);*/
+                    x5 = theForm.fields.elementAt(i).getData().toString();
+                    System.out.println(x5+"this is the multicheck");
+                    //x5=check.getVal();
+                    z = theForm.fields.elementAt(i).getLabel().toString();
+                    z= z.replaceAll("\\s+","");
+                    z= z.replaceAll("\\s+","");
+                    z= z.replaceAll("\\s+","");
+                    z=z.replaceAll("<","oa");
+                    z= z.replaceAll(">","ca");
+                    z=z.replaceAll("</","oba");
+                    z=z.replaceAll("/>","cba");
+                    z=z.replaceAll(":","");
+
+                    values.put(z, x5);
+                    l.add(x5);
+                    //db.insert(aa,null,values);
+                }
+
             }
-        */
+         //   db.close();
+
         }
 
         values.put("synced",0);
@@ -665,6 +755,8 @@ public class RunForm extends Activity {
             return false;
         }
     }
+
+
     private String Clearform(){
         //    try{
         //      int i=0;
@@ -713,18 +805,18 @@ public class RunForm extends Activity {
                 // String jxml="oa?xml version='1.0' encoding='utf-8'?caoaxmlguicaoaform id='1' name='Robotics Club Registration'caoafield label='First Name' type='text' required='Y' options='' cbaoafield label='Last Name' type='text' required='Y' options='' cbaoafield label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn' cbaoafield label='Age on 15 Oct. 2010' type='numeric' required='N' options='' cbaoafield label='checkbox' type='CheckBox' required='Y' options='meoww|bowwwow|sfnjdnkjdbv' cbaoafield label='checkboxmeoww' type='CheckBox2' required='Y' options='meoww|bowwwow|sfnjdnkjdbv' cba obaformca obaxmlguica";
                 //String jxml=msa.getFormCode(formNumber);
 //String jxml= "<?xml version='1.0' encoding='utf-8'?><xmlgui><form id='1' name='Robotics Club Registration'><field label='First Name' type='text' required='Y' options='' /><field label='Last Name' type='text' required='Y' options='' /><field label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn' /><field label='Age on 15 Oct. 2010' type='numeric' required='N' options='' /><field label='checkbox' type='CheckBox' required='Y' options='meoww|bowwwow|sfnjdnkjdbv' /><field label='checkboxmeoww' type='CheckBox2' required='Y' options='meoww|bowwwow|sfnjdnkjdbv' /> </form> </xmlgui>";
-                jxml=jxml.replace("oba","</");
-                jxml=jxml.replace("cba","/>");
-                jxml=jxml.replace("oa","<");
-                jxml=jxml.replace("ca",">");
+                jxml=jxml.replaceAll("oba","</");
+                jxml=jxml.replaceAll("cba","/>");
+                jxml=jxml.replaceAll("oa","<");
+                jxml=jxml.replaceAll("ca",">");
 
 
-                //jxml=jxml.replace(" '","'");
-                //jxml=jxml.replace("' ","'");
+                //jxml=jxml.replaceAll(" '","'");
+                //jxml=jxml.replaceAll("' ","'");
                 ;
 
                 //  String xxml="<?xml version='1.0' encoding='utf-8'?><xmlgui><form id='1' name='Robotics Club Registration'<field label='First Name' type='text' required='Y' options=''><field label='Last Name' type='text' required='Y' options=''><field label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn'><field label='Age on 15 Oct. 2010' type='numeric' required='N' options=''><field label='checkbox' type='CheckBox' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'><field label='checkboxmeoww' type='CheckBox2' required='Y' options='meoww|bowwwow|sfnjdnkjdbv'><form><xmlgui>";
-                //xxml=xxml.replace(">",">\n");
+                //xxml=xxml.replaceAll(">",">\n");
                 Log.d("*****",jxml);
 
 

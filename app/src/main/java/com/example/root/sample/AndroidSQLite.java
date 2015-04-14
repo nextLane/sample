@@ -245,19 +245,19 @@ public class AndroidSQLite extends Activity {
             in.close();
             String page = sb.toString();
 */
-           // json = jp.makeHttpRequest(url_all_forms);
+            // json = jp.makeHttpRequest(url_all_forms);
             Log.d("WWWWWWW", "YYYYY");
 
-             //try {
-               // json = new JSONObject(page);
-             //Log.d("jjjj:", "" + json);
+            //try {
+            // json = new JSONObject(page);
+            //Log.d("jjjj:", "" + json);
             //}
             //catch (JSONException e) {
-             //e.printStackTrace();
+            //e.printStackTrace();
             //}
 
             // Check your log cat for JSON reponse
-         //   Log.d("All Forms: ", json.toString());
+            //   Log.d("All Forms: ", json.toString());
 
 
             try {
@@ -278,71 +278,35 @@ public class AndroidSQLite extends Activity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
+                    mySQLiteAdapter.deleteAll();
                     // looping through All Products from table
+                    Cursor cl;
                     for (int i = 0; i < products.length(); i++) {
                         JSONObject c = products.getJSONObject(i);
 
                         // Storing each json item in variable
                         String id = c.getString(TAG_FID);
                         Log.d("******: ", "preInserting .." + id);
-                        Cursor cl = newDb.rawQuery("Select Content from MYTABLE where volid =" + volunteer_id + " and _id=" + id, null);
-                       Log.d("cursorrr:",""+cl.getCount());
-                        if (cl.getCount() == 0)
+                       // cl = newDb.rawQuery("Select Content from MYTABLE where volid =" + volunteer_id + " and _id=" + id, null);
+                       // Log.d("cursorrr:",""+cl.getCount());
+                       // if (cl.getCount() == 0)
                         //   Log.d("ididid: ", ""+db.getForm(Integer.parseInt(id)).getXML());
 
                         //if(db.getForm(Integer.parseInt(id))==null) {
-                        {
+                        //{
                             String name = c.getString(TAG_TITLE);
 
                             String xmll = c.getString(TAG_XML);
                             // creating new HashMap
                             Log.d("++++Insert: ", "Inserting ..");
                             mySQLiteAdapter.insert(id, name, xmll, volunteer_id,ngoid);
-                        }
+                        //}
 
 //                        }
 
 
                     }
-                } else {
-                    // no products found
-                    // Launch Add New product Activity
-                    //                    Intent i = new Intent(getApplicationContext(),
-                    //                    NewProductActivity.class);
-                    //          // Closing all previous activities
-                    //        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    //      startActivity(i);
                 }
-
-
- /*           mySQLiteAdapter.insert("A for Apply");
-            mySQLiteAdapter.insert("B for Boy");
-            mySQLiteAdapter.insert("C for Cat");
-            mySQLiteAdapter.insert("D for Dog");
-            mySQLiteAdapter.insert("E for Egg");
-            mySQLiteAdapter.insert("F for Fish");
-            mySQLiteAdapter.insert("G for Girl");
-            mySQLiteAdapter.insert("H for Hand");
-            mySQLiteAdapter.insert("I for Ice-scream");
-            mySQLiteAdapter.insert("J for Jet");
-            mySQLiteAdapter.insert("K for Kite");
-            mySQLiteAdapter.insert("L for Lamp");
-            mySQLiteAdapter.insert("M for Man");
-            mySQLiteAdapter.insert("N for Nose");
-            mySQLiteAdapter.insert("O for Orange");
-            mySQLiteAdapter.insert("P for Pen");
-            mySQLiteAdapter.insert("Q for Queen");
-            mySQLiteAdapter.insert("R for Rain");
-            mySQLiteAdapter.insert("S for Sugar");
-            mySQLiteAdapter.insert("T for Tree");
-            mySQLiteAdapter.insert("U for Umbrella");
-            mySQLiteAdapter.insert("V for Van");
-            mySQLiteAdapter.insert("W for Water");
-            mySQLiteAdapter.insert("X for X'mas");
-            mySQLiteAdapter.insert("Y for Yellow");
-            mySQLiteAdapter.insert("Z for Zoo");
-*/
                 newDb.close();
                 sl.close();
                 mySQLiteAdapter.close();
@@ -455,7 +419,13 @@ public class AndroidSQLite extends Activity {
 
 
                         // Cursor c = newDB.rawQuery("Select * from " + p.get(i) + " where synced = '0'", null);
-                        Cursor c = newDB.rawQuery("Select * from " + p.get(i) + " where synced = 0 ", null);
+
+                        String cols[]=sla.getColumnNames(p.get(i));
+                        String cll= cols[0];
+                        for(int o=1; o<cols.length-1; o++)
+                            cll=cll+", "+cols[o];
+
+                        Cursor c = newDB.rawQuery("Select "+cll+" from " + p.get(i) + " where synced = 0 ", null);
 
                         Log.d("Tblllll:", p.get(i));
                         int cnt = c.getColumnCount();
@@ -488,8 +458,8 @@ public class AndroidSQLite extends Activity {
                             int arrayLength = jArray.length();
 
                             Log.d("", "Length of the jArray" + arrayLength);
-                         //    HttpParams httpParams = new BasicHttpParams();
-                          //  HttpConnectionParams.setConnectionTimeout(httpParams, 9000);
+                            //    HttpParams httpParams = new BasicHttpParams();
+                            //  HttpConnectionParams.setConnectionTimeout(httpParams, 9000);
                             //HttpConnectionParams.setSoTimeout(httpParams, 9000);
 
                             //HttpClient client = new DefaultHttpClient(httpParams);
@@ -500,7 +470,7 @@ public class AndroidSQLite extends Activity {
                             //request.setEntity(new ByteArrayEntity(jArray.toString().getBytes("UTF8")));
                             //request.setHeader("json", jArray.toString());
                             Log.d("Beforeeee:", "eeeee");
-                           // HttpResponse response = client.execute(request);
+                            // HttpResponse response = client.execute(request);
                             JSONTransmitter jt = new JSONTransmitter(jArray,url,p,i,newDB, this);
                             jt.execute();
                             String result= jt.getResult();
@@ -509,41 +479,41 @@ public class AndroidSQLite extends Activity {
                             Log.d("Afterrrr:", "partyyyy");
 
 //                               Toast.makeText(getApplicationContext(), "Synced, submitted!",
-                                                              //    Toast.LENGTH_SHORT).show();
+                            //    Toast.LENGTH_SHORT).show();
 
                             //if (entity != null) {
-                              //InputStream instream = entity.getContent();
+                            //InputStream instream = entity.getContent();
 
 
                             //String result = getStringFromInputStream(instream);
-                                       //                  Log.i("Read from server", result);
-                            }
-                        } catch (JSONException e) {
+                            //                  Log.i("Read from server", result);
+                        }
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
 
 
                     i++;
-                        // ArrayList<String> arrTblNames = new ArrayList<String>();
-                        //SQLiteDatabase db =openOrCreateDatabase("surdb",SQLiteDatabase.CREATE_IF_NECESSARY,null);
-                        //Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+                    // ArrayList<String> arrTblNames = new ArrayList<String>();
+                    //SQLiteDatabase db =openOrCreateDatabase("surdb",SQLiteDatabase.CREATE_IF_NECESSARY,null);
+                    //Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
 
-                        //if (c.moveToFirst()) {
-                        //  while ( !c.isAfterLast() ) {
-                        //    arrTblNames.add( c.getString( c.getColumnIndex("name")) );
-                        //  c.moveToNext();
-                    }
-
-
+                    //if (c.moveToFirst()) {
+                    //  while ( !c.isAfterLast() ) {
+                    //    arrTblNames.add( c.getString( c.getColumnIndex("name")) );
+                    //  c.moveToNext();
                 }
+
+
+            }
             newDB.close();
             Toast.makeText(getApplicationContext(), "Synced to Server!",
                     Toast.LENGTH_SHORT).show();
-                sla.close();
+            sla.close();
 
-                return true;
-            }
+            return true;
+        }
 
         return false;
     }

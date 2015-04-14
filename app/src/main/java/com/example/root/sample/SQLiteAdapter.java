@@ -31,8 +31,8 @@ public class SQLiteAdapter {
                     + KEY_ID + " integer primary key , "
                     + KEY_VOLID + " integer , "
                     + KEY_NGOID + " integer , "
-                    + KEY_CONTENT + " text not null, "
-                    + KEY_CODE + " text not null);";
+                    + KEY_CONTENT + " text, "
+                    + KEY_CODE + " text );";
 
     private SQLiteHelper sqLiteHelper;
     private SQLiteDatabase sqLiteDatabase;
@@ -97,6 +97,7 @@ public class SQLiteAdapter {
         return sqLiteDatabase;
     }
 
+
     public void close(){
         sqLiteHelper.close();
     }
@@ -143,6 +144,14 @@ public class SQLiteAdapter {
          //       null, null, null, null, null);
         Cursor cursor= sqLiteDatabase.rawQuery("SELECT * FROM MYTABLE WHERE ngoid ='"+ngoid+"' AND volid='"+volid+"'", null);
         return cursor;
+    }
+
+
+    public String[] getColumnNames(String tn)
+    {
+        Cursor dbCursor = sqLiteDatabase.query(tn, null, null, null, null, null, null);
+        String[] columnNames = dbCursor.getColumnNames();
+        return columnNames;
     }
 
     public class SQLiteHelper extends SQLiteOpenHelper {
