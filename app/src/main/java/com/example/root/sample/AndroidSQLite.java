@@ -178,6 +178,7 @@ public class AndroidSQLite extends Activity {
 
             //String jStr= "{\"forms\":[{\"fid\":\"1\",\"title\":\"Agriculture Survey\",\"xml\":\"oa?xml version='1.0' encoding='utf-8'?caoaxmlguicaoaform id='1' name='RoboticsClubRegistration'caoafield label='FirstName' type='text' required='Y' options='' cbaoafield label='LastName' type='text' required='Y' options='' cbaoafield label='Gender' type='choice' required='Y' options='Male|Female' cbaoafield label='Age' type='numeric' required='N' options='' cbaoafield label='checkbox' type='CheckBox' required='Y' options='X|XII|Diploma' cbaoafield label='checkboxmeoww' type='CheckBox2' required='Y' options='Minor|Major|NA' cba obaformca obaxmlguica\",\"updated_at\":\"2015-04-06 03:07:57\"},{\"fid\":\"2\",\"title\":\"Women Health\",\"xml\":\"oa?xml version='1.0' encoding='utf-8'?caoaxmlguicaoaform id='1' name='RoboticsClubRegistration'caoafield label='FirstName' type='text' required='Y' options='' cbaoafield label='LastName' type='text' required='Y' options='' cbaoafield label='Gender' type='choice' required='Y' options='Male|Female|sdksfnekfn' cbaoafield label='Ageon15Oct2010' type='numeric' required='N' options='' cbaoafield label='checkbox' type='CheckBox' required='Y' options='code|teach|cook' cbaoafield label='checkboxmeoww' type='CheckBox2' required='Y' options='Stressed|Contended|Very Happy' cba obaformca obaxmlguica\",\"updated_at\":\"2015-04-06 03:08:05\"}],\"success\":1}";
             //     Log.d("jjjj:",""+jStr);
+            url_all_forms = "http://webscrapper.in/team14/get_all_forms.php";
             url_all_forms += "?ngoid=" + ngoid + "&volunteer_id=" + volunteer_id;
             Log.d("uuuuu",url_all_forms);
             HttpResponse response = null;
@@ -315,7 +316,7 @@ public class AndroidSQLite extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Toast.makeText(AndroidSQLite.this, "Forms updated ! ", Toast.LENGTH_LONG).show();
+           // Toast.makeText(AndroidSQLite.this, "Forms updated ! ", Toast.LENGTH_LONG).show();
 
         }
         else
@@ -520,6 +521,7 @@ public class AndroidSQLite extends Activity {
 
 
 
+
     private static String getStringFromInputStream(InputStream is) {
 
         BufferedReader br = null;
@@ -546,6 +548,33 @@ public class AndroidSQLite extends Activity {
 
         return sb.toString();
 
+    }
+
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();  // Always call the superclass method first
+        try {
+            formsFetch();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        // Activity being restarted from stopped state
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();  // Always call the superclass method first
+        try {
+            formsFetch();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        // Activity being restarted from stopped state
     }
     private boolean haveNetworkConnection() {
         boolean haveConnectedWifi = false;
